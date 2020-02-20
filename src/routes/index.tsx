@@ -2,12 +2,14 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import React, {useEffect, useState} from 'react';
-import {TouchableOpacity, View, Animated} from 'react-native';
+import {TouchableOpacity, View, Animated, Text} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import {useStoreState} from 'easy-peasy';
 import {animate} from '../helpers/animation';
 import Dashboard from '../modules/Dashboard';
 import Love from '../modules/Love';
 import Profile from '../modules/Profile';
+import Cart from '../modules/Cart';
 
 function MyTabBar({state, descriptors, navigation}) {
   const startAnimate = (
@@ -39,7 +41,7 @@ function MyTabBar({state, descriptors, navigation}) {
             circle: new Animated.Value(0),
           });
           const {options} = descriptors[route.key];
-          const label =
+          const label: 'home' | 'love' | 'cart' | 'profile' =
             options.tabBarLabel !== undefined
               ? options.tabBarLabel
               : options.title !== undefined
@@ -107,6 +109,9 @@ function MyTabBar({state, descriptors, navigation}) {
               ]);
             }
           }, [isFocused]);
+          const countCart: number[] = useStoreState(
+            state => state.keranjang.items,
+          );
           return (
             <TouchableOpacity
               key={index}
@@ -116,7 +121,26 @@ function MyTabBar({state, descriptors, navigation}) {
               testID={options.tabBarTestID}
               onPress={onPress}
               onLongPress={onLongPress}
-              style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+              style={{
+                flex: 1,
+                alignItems: 'center',
+                justifyContent: 'center',
+                bottom: label === 'cart' ? 5 : 0,
+              }}>
+              {label === 'cart' && countCart.length !== 0 && (
+                <View
+                  style={{
+                    backgroundColor: 'red',
+                    height: 15,
+                    width: 15,
+                    borderRadius: 30,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    top: 10,
+                  }}>
+                  <Text style={{color: '#fff'}}>{countCart.length}</Text>
+                </View>
+              )}
               <IconAnimated
                 name={title()}
                 // size={isFocused ? 30 : 25}
@@ -149,7 +173,7 @@ const HomeTabs = () => {
       screenOptions={{unmountOnBlur: false}}>
       <Screen name="home" component={Dashboard} />
       <Screen name="love" component={Love} />
-      <Screen name="cart" component={Profile} />
+      <Screen name="cart" component={Cart} />
       <Screen name="profile" component={Profile} />
     </Navigator>
   );
