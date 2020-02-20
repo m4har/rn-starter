@@ -1,11 +1,14 @@
-import React from 'react';
+import 'react-native-gesture-handler';
+import './services/i18n';
+
+import React, {useEffect} from 'react';
 import {useTranslation} from 'react-i18next';
 import styled from 'styled-components/native';
 import {Theme} from './config/themes/types';
 import ThemeManager, {useTheme} from './contexts/ManageThemeContext';
 import T from './lang/types';
-import './services/i18n';
-
+import Routes from './routes';
+import {enableAnimation} from './helpers/animation';
 const Container = styled.View<Theme>`
   flex: 1;
   justify-content: center;
@@ -17,12 +20,12 @@ const Text = styled.Text<Theme>`
 `;
 const App = () => {
   const theme = useTheme();
-  const {t, i18n} = useTranslation();
+  useEffect(() => {
+    enableAnimation();
+  }, [false]);
   return (
     <ThemeManager>
-      <Container>
-        <Text>{t(T.hello)}</Text>
-      </Container>
+      <Routes />
     </ThemeManager>
   );
 };
